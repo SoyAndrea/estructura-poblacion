@@ -1,0 +1,143 @@
+---
+title: "Estructura"
+format: html
+editor: visual
+---
+
+
+## Tarea #1
+```{r}
+library(openxlsx)
+library(tidyverse)
+```
+
+
+1. Obtenga los datos de población por sexo y grupos quinquenales para una
+jurisdicción seleccionado, incluyendo la desagregación por departamentos, con
+la última información censal disponible.
+
+Datos extraidos de REDATAM - Censo Nacional de Población, Hogares y Viviendas 2001 y 2022. 
+
+“Fuente: elaboración propia con base en datos del INDEC. Censo Nacional de Población, Hogares y Viviendas 2022, procesado con Redatam 7". 
+
+2. Construya una pirámide poblacional jurisdiccional en función de los datos
+obtenidos.
+
+```{r}
+piramide_2022 <- read.xlsx("data/deptos_con_codigo.xlsx", sheet = "2022") %>% 
+  filter(in1 == 78000) %>% 
+  select(1,3,4) %>% 
+  pivot_longer(cols = c(2,3),names_to = "sexo", values_to = "poblacion") %>% 
+  mutate(sexo = ifelse(sexo == "varones", "V", "M"))
+
+piramide_2022$grupo_edad = ifelse(piramide_2022$grupo_edad %in% "0-4", "00-04", piramide_2022$grupo_edad)
+piramide_2022$grupo_edad = ifelse(piramide_2022$grupo_edad %in% "5-9", "05-09", piramide_2022$grupo_edad)
+
+piramide_2022 %>%
+  mutate(poblacion = as.numeric(poblacion)) %>%  # Convertir a numérico
+  #group_by(censo) %>%
+  mutate(porcentaje = as.numeric(poblacion / sum(poblacion) * 100)) %>%
+  ungroup() %>%
+  mutate(porcentaje = ifelse(sexo == "V", -porcentaje, porcentaje)) %>% 
+  mutate(sexo =  ifelse(sexo == "V", "varones", "mujeres")) %>% 
+  ggplot(aes(x = grupo_edad, y = porcentaje, fill = sexo)) +
+  geom_bar(stat = "identity") +
+  coord_flip() +  # Rotar la gráfica
+  #facet_wrap(~censo) +  # Separar por año
+  scale_y_continuous(breaks = seq(-10, 10, by = 2), 
+                     labels = paste0(c(seq(-10, 0, by = 2)*-1, seq(2, 10, by = 2)), "%")) +
+  #scale_fill_manual(values = c("#0cce6b","#083d77")) + 
+  scale_fill_manual(values = c("#465775","#ef6f6c")) + 
+  labs(
+    y  = "porcentaje",
+    x  = "grupo de edad") +
+  theme_bw() +
+  theme(legend.position = "bottom",
+        legend.title = element_blank())
+
+```
+
+
+3. Construya pirámides poblacionales para cada departamento de la
+jurisdicción designada.
+
+```{r}
+piramide_2022_prv <- read.xlsx("data/deptos_con_codigo.xlsx", sheet = "2022") %>% 
+  filter(in1 != 78000) %>% 
+  select(1,3,4,6) %>% 
+  pivot_longer(cols = c(2,3),names_to = "sexo", values_to = "poblacion") %>% 
+  mutate(sexo = ifelse(sexo == "varones", "V", "M"),
+         depto = fct_relevel(depto, c("Corpen Aike", "Deseado","Güer Aike","Lago Argentino", "Lago Buenos Aires", "Magallanes", "Río Chico")))
+
+piramide_2022_prv$grupo_edad = ifelse(piramide_2022_prv$grupo_edad %in% "0-4", "00-04", piramide_2022_prv$grupo_edad)
+piramide_2022_prv$grupo_edad = ifelse(piramide_2022_prv$grupo_edad %in% "5-9", "05-09", piramide_2022_prv$grupo_edad)
+
+piramide_2022_prv %>%
+  mutate(poblacion = as.numeric(poblacion)) %>%  # Convertir a numérico
+  group_by(depto) %>%
+  mutate(porcentaje = as.numeric(poblacion / sum(poblacion) * 100)) %>%
+  ungroup() %>%
+  mutate(porcentaje = ifelse(sexo == "V", -porcentaje, porcentaje)) %>% 
+  mutate(sexo =  ifelse(sexo == "V", "varones", "mujeres")) %>% 
+  ggplot(aes(x = grupo_edad, y = porcentaje, fill = sexo)) +
+  geom_bar(stat = "identity") +
+  coord_flip() +  # Rotar la gráfica
+  facet_wrap(~depto) +  # Separar por año
+  scale_y_continuous(breaks = seq(-10, 10, by = 2), 
+                     labels = paste0(c(seq(-10, 0, by = 2)*-1, seq(2, 10, by = 2)), "%")) +
+  #scale_fill_manual(values = c("#0cce6b","#083d77")) + 
+  scale_fill_manual(values = c("#465775","#ef6f6c")) + 
+  labs(
+    y  = "porcentaje",
+    x  = "grupo de edad") +
+  theme_bw() +
+  theme(legend.position = "bottom",
+        legend.title = element_blank())
+
+```
+
+
+4. Interprete los resultados obtenidos en los puntos 2 y 3.
+
+5. Comente en un máximo de 400 palabras los procedimientos que siguió para
+obtener y procesar la información.
+
+(6). Si lo desea, puede complementar la interpretación anterior con la pirámide
+poblacional a nivel país. O trabajar con diferentes años censales.
+
+Censo 2001 vs 2022
+
+```{r}
+piramide <- read.xlsx("data/deptos_con_codigo.xlsx", sheet = "censos")
+
+piramide$grupo_edad = ifelse(piramide$grupo_edad %in% "0-4", "00-04", piramide$grupo_edad)
+piramide$grupo_edad = ifelse(piramide$grupo_edad %in% "5-9", "05-09", piramide$grupo_edad)
+
+
+g_piramide <- piramide %>%
+  mutate(poblacion = as.numeric(poblacion)) %>%  # Convertir a numérico
+  group_by(censo) %>%
+  mutate(porcentaje = as.numeric(poblacion / sum(poblacion) * 100)) %>%
+  ungroup() %>%
+  mutate(porcentaje = ifelse(sexo == "V", -porcentaje, porcentaje)) %>% 
+  mutate(sexo =  ifelse(sexo == "V", "varones", "mujeres")) %>% 
+  ggplot(aes(x = grupo_edad, y = porcentaje, fill = sexo)) +
+  geom_bar(stat = "identity") +
+  coord_flip() +  # Rotar la gráfica
+  facet_wrap(~censo) +  # Separar por año
+  scale_y_continuous(breaks = seq(-10, 10, by = 2), 
+                     labels = paste0(c(seq(-10, 0, by = 2)*-1, seq(2, 10, by = 2)), "%")) +
+  #scale_fill_manual(values = c("#0cce6b","#083d77")) + 
+  scale_fill_manual(values = c("#465775","#ef6f6c")) + 
+  labs(
+    y  = "porcentaje",
+    x  = "grupo de edad") +
+  theme_bw() +
+  theme(legend.position = "bottom",
+        legend.title = element_blank())
+
+
+g_piramide
+
+#ggsave(filename = "graficos/piramide.png", plot =g_piramide, width = 20, height = 10, units = "cm")
+```
