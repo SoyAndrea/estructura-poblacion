@@ -77,6 +77,12 @@ ul.task-list li input[type="checkbox"] {
           </div>
   </div>
     
+    <div>
+    <div class="quarto-title-meta-heading">Fecha de publicación</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">26 de marzo de 2025</p>
+    </div>
+  </div>
   
     
   </div>
@@ -205,10 +211,25 @@ ul.task-list li input[type="checkbox"] {
 </section>
 <section id="interprete-los-resultados-obtenidos-en-los-puntos-2-y-3." class="level3">
 <h3 class="anchored" data-anchor-id="interprete-los-resultados-obtenidos-en-los-puntos-2-y-3.">4. Interprete los resultados obtenidos en los puntos 2 y 3.</h3>
+<blockquote class="blockquote">
+<p>Para el censo de 2022, la población de la provincia de Santa Cruz es de 337.226 habitantes, siendo una de las provincias con menor densidad poblacional, con 1,4 habitantes por km². La pirámide poblacional de la provincia muestra una base estrecha en el grupo quinquenal de 0-4 años, lo que sugiere una reducción en la tasa de natalidad. Sin embargo, se observa un aumento en los grupos de edad de 5 a 19 años, seguido de una nueva disminución en el grupo de 20 a 24 años, edad clave en la actividad económica. A pesar de ello, los grupos posteriores (de 25 a 44 años) indican una población predominante en edad productiva. La cúspide muestra un ligero ensanchamiento, lo que refleja una esperanza de vida en aumento y un leve proceso de envejecimiento poblacional.</p>
+</blockquote>
+<blockquote class="blockquote">
+<p>En general, la distribución entre varones y mujeres es equilibrada en la mayoría de los grupos etarios, aunque en edades avanzadas se nota una mayor proporción de mujeres, lo que es común debido a una mayor esperanza de vida.</p>
+</blockquote>
+<blockquote class="blockquote">
+<p>En los departamentos de la provincia, el fenómeno de base estrecha y la contracción en el grupo etario de 20-24 años se intensifica o se extiende a otros grupos a medida que varían las regiones. En Corpen Aike, Lago Buenos Aires y Magallanes, la pirámide presenta una base angosta, con una contracción más marcada en el grupo de 15 a 24 años. Sin embargo, la distribución de los demás grupos etarios se mantiene constante y en línea con el total provincial.</p>
+</blockquote>
+<blockquote class="blockquote">
+<p>En Deseado, la estructura poblacional sigue un patrón similar al de la provincia en su conjunto. En cambio, Güer Aike muestra la mayor reducción en la base de la pirámide en comparación con el resto de los departamentos, lo que refleja una menor natalidad en los últimos años.</p>
+</blockquote>
+<blockquote class="blockquote">
+<p>Por otro lado, en los departamentos de Lago Argentino y Río Chico, las pirámides poblacionales presentan mayores fluctuaciones en los grupos quinquenales de mayor actividad productiva, mientras que las edades asociadas al retiro del mercado laboral se mantienen relativamente constantes.</p>
+</blockquote>
 </section>
 <section id="comente-en-un-máximo-de-400-palabras-los-procedimientos-que-siguió-para-obtener-y-procesar-la-información." class="level3">
 <h3 class="anchored" data-anchor-id="comente-en-un-máximo-de-400-palabras-los-procedimientos-que-siguió-para-obtener-y-procesar-la-información.">5. Comente en un máximo de 400 palabras los procedimientos que siguió para obtener y procesar la información.</h3>
-<p>Una vez descargadas las tablas de datos de la provincia de Santa Cruz y sus departamentos sobre la estructura de población para los censos de 2001 y 2022 desde REDATAM, se procedió a crear una base estructurada que permitiera transformar y calcular los datos de la población en valores porcentuales del total. Este porcentaje se calcula como el cociente entre la población de un sexo y grupo de edad determinados y la población total, multiplicado por cien. Luego, se utilizan estos datos para la graficación en el lenguaje de programación R, que permite representar gráficamente la distribución de la población de un lugar, mostrando cómo se distribuyen los individuos en diferentes grupos de edad y sexo.</p>
+<p>Una vez descargadas las tablas de datos de la provincia de Santa Cruz y sus departamentos sobre la estructura de población para los censos de 2001 y 2022 desde REDATAM, se procedió a crear una base estructurada que permitiera transformar y calcular los datos de la población en valores porcentuales del total. Este porcentaje se calcula como el cociente entre la población de un sexo y grupo de edad determinados y la población total, multiplicado por cien. Luego, se utilizan estos datos para la graficación en el lenguaje de programación R, que permite representar mediante un gráfico de barras la distribución de la población de un lugar, mostrando cómo se distribuyen los individuos en diferentes grupos quinquenales de edad y sexo.</p>
 <div style="page-break-after: always;"></div>
 </section>
 <section id="si-lo-desea-puede-complementar-la-interpretación-anterior-con-la-pirámide-poblacional-a-nivel-país.-o-trabajar-con-diferentes-años-censales." class="level3">
@@ -226,6 +247,15 @@ ul.task-list li input[type="checkbox"] {
 </div>
 </div>
 <p><em>Fuente: elaboración propia con base en datos del INDEC. Censo Nacional de Población, Hogares y Vivienda 2022, procesado con Redatam 7.</em></p>
+<blockquote class="blockquote">
+<p>Para el censo de 2022, la pirámide poblacional del país es de tipo estacionaria, ya que presenta una base moderada. Los grupos de edad intermedios son amplios y mantienen un tamaño relativamente constante, lo que sugiere un equilibrio entre nacimientos y mortalidad, con niveles bajos en ambos indicadores.</p>
+</blockquote>
+<blockquote class="blockquote">
+<p>Ambas pirámides tienen una estructura similar, con una base más estrecha en los grupos de edad más jóvenes y un ensanchamiento en los grupos adultos. Sin embargo, la pirámide de Santa Cruz muestra una base aún más reducida en comparación con la del total del país, lo que sugiere una menor natalidad o una mayor migración de población joven.</p>
+</blockquote>
+<blockquote class="blockquote">
+<p>En ambos casos, el porcentaje de población mayor (65+ años) sigue siendo bajo, aunque presenta un leve ensanchamiento, reflejando un aumento en la esperanza de vida y un proceso gradual de envejecimiento poblacional.</p>
+</blockquote>
 <p>Gráfico 4. Estructura de la población por sexo y grupos quinquenales de edad. Total del país y Provincia de Santa Cruz. Año 2001</p>
 <div class="cell">
 <div class="cell-output-display">
@@ -237,9 +267,14 @@ ul.task-list li input[type="checkbox"] {
 </div>
 </div>
 <p><em>Fuente: elaboración propia con base en datos del INDEC. Censo Nacional de Población, Hogares y Vivienda 2001, procesado con Redatam 7.</em></p>
+<blockquote class="blockquote">
+<p>Para el censo de 2001, la pirámide poblacional del total del país presentaba una estructura expansiva moderada, con una base relativamente ancha y una reducción progresiva en los grupos de edad superiores, lo que sugiere que la natalidad seguía siendo significativa. En comparación con el censo de 2022, la provincia de Santa Cruz muestra un estrechamiento de su base y alteraciones en grupos etarios clave, reflejando cambios en los patrones de natalidad y migración.</p>
+</blockquote>
+<div style="page-break-after: always;"></div>
 </section>
 <section id="comparativo-departamental-2001-y-2022" class="level4">
 <h4 class="anchored" data-anchor-id="comparativo-departamental-2001-y-2022">Comparativo departamental 2001 y 2022</h4>
+<p>En este apartado observamos en detalle la transformación demográfica de cada uno de los departamentos de la provinia de Santa Cruz entre los censos de 2001 y 2022</p>
 <p>Gráfico 5 . Estructura de la población por sexo y grupos quinquenales de edad. Departamento Corpen Aike. Provincia de Santa Cruz. Años 2001 y 2022</p>
 <div class="cell">
 <div class="cell-output-display">
@@ -251,6 +286,10 @@ ul.task-list li input[type="checkbox"] {
 </div>
 </div>
 <p><em>Fuente: elaboración propia con base en datos del INDEC. Censo Nacional de Población, Hogares y Viviendas 2001 y 2022, procesado con Redatam 7.</em></p>
+<blockquote class="blockquote">
+<p>Para este departamento, en 2001, la pirámide presenta una forma predominantemente triangular, aunque con algunas irregularidades, lo que indica una población con una base relativamente ancha y sugiere una tasa de natalidad más alta en comparación con los grupos de edad más avanzada. En cambio, para 2022, la pirámide muestra una tendencia hacia una forma más rectangular o de ‘campana’, lo que refleja una disminución en la natalidad y un aumento en la proporción de personas en grupos de edad intermedios y avanzados.</p>
+</blockquote>
+<div style="page-break-after: always;"></div>
 <p>Gráfico 6. Estructura de la población por sexo y grupos quinquenales de edad. Departamento Deseado. Provincia de Santa Cruz. Años 2001 y 2022</p>
 <div class="cell">
 <div class="cell-output-display">
@@ -262,6 +301,10 @@ ul.task-list li input[type="checkbox"] {
 </div>
 </div>
 <p><em>Fuente: elaboración propia con base en datos del INDEC. Censo Nacional de Población, Hogares y Viviendas 2001 y 2022, procesado con Redatam 7.</em></p>
+<blockquote class="blockquote">
+<p>La pirámide de 2001 presenta una forma más cercana a la triangular, mientras que la de 2022 adopta una forma similar a una campana, e incluso comienza a mostrar características de urna. Se observa una tendencia al envejecimiento de la población en Deseado, reflejada en la disminución de la base de la pirámide (menos jóvenes) y el aumento en la cima (más adultos mayores). Este patrón también se repite en otros departamentos.</p>
+</blockquote>
+<div style="page-break-after: always;"></div>
 <p>Gráfico 7. Estructura de la población por sexo y grupos quinquenales de edad. Departamento Güer Aike. Provincia de Santa Cruz. Años 2001 y 2022</p>
 <div class="cell">
 <div class="cell-output-display">
@@ -273,6 +316,10 @@ ul.task-list li input[type="checkbox"] {
 </div>
 </div>
 <p><em>Fuente: elaboración propia con base en datos del INDEC. Censo Nacional de Población, Hogares y Viviendas 2001 y 2022, procesado con Redatam 7.</em></p>
+<blockquote class="blockquote">
+<p>Se observa una disminución en el porcentaje de población en los grupos de edad más jóvenes (0-14 años) entre 2001 y 2022, lo que refleja una reducción en la tasa de natalidad del departamento. En 2022, la pirámide poblacional muestra una tendencia hacia una forma más rectangular o de ‘campana’, lo que indica un aumento en la proporción de personas en grupos de edad intermedios y avanzados.</p>
+</blockquote>
+<div style="page-break-after: always;"></div>
 <p>Gráfico 8. Estructura de la población por sexo y grupos quinquenales de edad. Departamento Lago Argentino. Provincia de Santa Cruz. Años 2001 y 2022</p>
 <div class="cell">
 <div class="cell-output-display">
@@ -284,6 +331,10 @@ ul.task-list li input[type="checkbox"] {
 </div>
 </div>
 <p><em>Fuente: elaboración propia con base en datos del INDEC. Censo Nacional de Población, Hogares y Viviendas 2001 y 2022, procesado con Redatam 7.</em></p>
+<blockquote class="blockquote">
+<p>Se observa una disminución en el porcentaje de población en los grupos de edad más jóvenes entre 2001 y 2022. En 2001, la pirámide poblacional tiene una forma más triangular, lo que refleja una población con una base más ancha y una cima más estrecha, lo que sugiere tasas de natalidad relativamente altas y una esperanza de vida más baja. En contraste, en 2022, la pirámide adopta una forma más cercana a la de una ‘campana’ e incluso comienza a mostrar características de ‘urna’. Esto indica una disminución en la natalidad y un aumento en la proporción de personas en grupos de edad más avanzada, lo que señala un envejecimiento progresivo de la población.</p>
+</blockquote>
+<div style="page-break-after: always;"></div>
 <p>Gráfico 9. Estructura de la población por sexo y grupos quinquenales de edad. Departamento Lago Buenos Aires. Provincia de Santa Cruz. Años 2001 y 2022</p>
 <div class="cell">
 <div class="cell-output-display">
@@ -295,6 +346,10 @@ ul.task-list li input[type="checkbox"] {
 </div>
 </div>
 <p><em>Fuente: elaboración propia con base en datos del INDEC. Censo Nacional de Población, Hogares y Viviendas 2001 y 2022, procesado con Redatam 7.</em></p>
+<blockquote class="blockquote">
+<p>En 2022, el departamento de Lago Buenos Aires muestra un estrechamiento en la base de la población de 0 a 14 años, en comparación con 2001, cuando se observaba una presencia más constante en estos grupos. El fenómeno provincial de concentración en el grupo de 20 a 24 años se mantiene, mientras que los demás grupos etarios se mantienen estables entre ambos periodos.</p>
+</blockquote>
+<div style="page-break-after: always;"></div>
 <p>Gráfico 10. Estructura de la población por sexo y grupos quinquenales de edad. Departamento Magallanes. Provincia de Santa Cruz. Años 2001 y 2022</p>
 <div class="cell">
 <div class="cell-output-display">
@@ -306,6 +361,10 @@ ul.task-list li input[type="checkbox"] {
 </div>
 </div>
 <p><em>Fuente: elaboración propia con base en datos del INDEC. Censo Nacional de Población, Hogares y Viviendas 2001 y 2022, procesado con Redatam 7.</em></p>
+<blockquote class="blockquote">
+<p>En 2022, la estructura poblacional del departamento de Magallanes muestra un ensanchamiento en la franja media, lo que indica una mayor concentración de adultos jóvenes, mientras que la base de la pirámide, correspondiente al grupo de 0 a 4 años, sigue siendo más estrecha.</p>
+</blockquote>
+<div style="page-break-after: always;"></div>
 <p>Gráfico 11. Estructura de la población por sexo y grupos quinquenales de edad. Departamento Río Chico. Provincia de Santa Cruz. Años 2001 y 2022</p>
 <div class="cell">
 <div class="cell-output-display">
@@ -317,6 +376,12 @@ ul.task-list li input[type="checkbox"] {
 </div>
 </div>
 <p><em>Fuente: elaboración propia con base en datos del INDEC. Censo Nacional de Población, Hogares y Viviendas 2001 y 2022, procesado con Redatam 7.</em></p>
+<blockquote class="blockquote">
+<p>El departamento de Río Chico es el menos poblado de la provincia. Su envejecimiento poblacional se mantiene constante y, para 2022, refleja las mismas alteraciones demográficas observadas en el total de la provincia.</p>
+</blockquote>
+<blockquote class="blockquote">
+<p>En síntesis, la provincia de Santa Cruz y sus departamentos muestran signos de menor natalidad, migración de jóvenes hacia otras zonas, y un proceso de envejecimiento paulatino. Es importante considerar las particularidades de cada departamento, como la actividad económica, la migración y otros factores que pueden influir en la estructura demográfica.</p>
+</blockquote>
 </section>
 </section>
 </section>

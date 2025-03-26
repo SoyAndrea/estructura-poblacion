@@ -1,7 +1,7 @@
 ---
 title: "Estructura y dinámica poblacional"
 subtitle: "Maestría en Generación y Análisis de Información Estadística"
-date: 03/25/2005
+date: 03/26/2025
 date-format: long
 author: "Andrea Gomez Vargas"
 lang: es
