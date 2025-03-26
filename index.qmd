@@ -1,29 +1,46 @@
 ---
-title: "Estructura"
-format: html
+title: "Estructura y dinámica poblacional"
+subtitle: "Maestría en Generación y Análisis de Información Estadística"
+date: 03/25/2005
+date-format: long
+author: "Andrea Gomez Vargas"
+lang: es
+format: 
+  html:
+    toc: true
+  pdf:
+    toc: true
 editor: visual
 ---
 
 
+
+\pagebreak 
+
+
 ## Tarea #1
+
 ```{r}
+#| include: false
 library(openxlsx)
 library(tidyverse)
+library(patchwork)
 ```
 
+### 1.  Obtenga los datos de población por sexo y grupos quinquenales para una jurisdicción seleccionado, incluyendo la desagregación por departamentos, con la última información censal disponible.
 
-1. Obtenga los datos de población por sexo y grupos quinquenales para una
-jurisdicción seleccionado, incluyendo la desagregación por departamentos, con
-la última información censal disponible.
+- Jurisdicción elegida: Santa Cruz 
 
-Datos extraidos de REDATAM - Censo Nacional de Población, Hogares y Viviendas 2001 y 2022. 
+- Datos extraidos de REDATAM - Censo Nacional de Población, Hogares y Viviendas 2001 y 2022. Disponibles en [https://redatam.indec.gob.ar/](https://redatam.indec.gob.ar/)
 
-“Fuente: elaboración propia con base en datos del INDEC. Censo Nacional de Población, Hogares y Viviendas 2022, procesado con Redatam 7". 
 
-2. Construya una pirámide poblacional jurisdiccional en función de los datos
-obtenidos.
 
-```{r}
+### 2.  Construya una pirámide poblacional jurisdiccional en función de los datos obtenidos.
+
+Gráfico 1 Estructura de la población por sexo y grupos quinquenales de edad. Provincia de Santa Cruz. Año 2022
+
+```{r grafico 1}
+#| echo: false
 piramide_2022 <- read.xlsx("data/deptos_con_codigo.xlsx", sheet = "2022") %>% 
   filter(in1 == 78000) %>% 
   select(1,3,4) %>% 
@@ -35,7 +52,6 @@ piramide_2022$grupo_edad = ifelse(piramide_2022$grupo_edad %in% "5-9", "05-09", 
 
 piramide_2022 %>%
   mutate(poblacion = as.numeric(poblacion)) %>%  # Convertir a numérico
-  #group_by(censo) %>%
   mutate(porcentaje = as.numeric(poblacion / sum(poblacion) * 100)) %>%
   ungroup() %>%
   mutate(porcentaje = ifelse(sexo == "V", -porcentaje, porcentaje)) %>% 
@@ -43,11 +59,11 @@ piramide_2022 %>%
   ggplot(aes(x = grupo_edad, y = porcentaje, fill = sexo)) +
   geom_bar(stat = "identity") +
   coord_flip() +  # Rotar la gráfica
-  #facet_wrap(~censo) +  # Separar por año
-  scale_y_continuous(breaks = seq(-10, 10, by = 2), 
-                     labels = paste0(c(seq(-10, 0, by = 2)*-1, seq(2, 10, by = 2)), "%")) +
-  #scale_fill_manual(values = c("#0cce6b","#083d77")) + 
-  scale_fill_manual(values = c("#465775","#ef6f6c")) + 
+  scale_y_continuous(
+    limits = c(-8, 8),
+    breaks = seq(-10, 10, by = 2), 
+    labels = paste0(c(seq(-10, 0, by = 2)*-1, seq(2, 10, by = 2)), "%")) +
+  scale_fill_manual(values = c("#20a39e","#ffba49")) + 
   labs(
     y  = "porcentaje",
     x  = "grupo de edad") +
@@ -58,86 +74,447 @@ piramide_2022 %>%
 ```
 
 
-3. Construya pirámides poblacionales para cada departamento de la
-jurisdicción designada.
 
-```{r}
-piramide_2022_prv <- read.xlsx("data/deptos_con_codigo.xlsx", sheet = "2022") %>% 
-  filter(in1 != 78000) %>% 
-  select(1,3,4,6) %>% 
-  pivot_longer(cols = c(2,3),names_to = "sexo", values_to = "poblacion") %>% 
+_Fuente: elaboración propia con base en datos del INDEC. Censo Nacional de Población, Hogares y Vivienda 2022, procesado con Redatam 7._
+
+
+
+\pagebreak 
+
+
+### 3.  Construya pirámides poblacionales para cada departamento de la jurisdicción designada.
+
+La provincia de Santa Cruz, se divide territorialmente en 7 departamentos.
+
+Gráfico 2. Estructuras de la población por sexo y grupos quinquenales de edad según departamento. Provincia de Santa Cruz. Año 2022
+
+
+```{r grafico 2}
+#| include: false
+piramide_78 <- read.xlsx("data/deptos_con_codigo.xlsx", sheet = "78") 
+  
+  
+  
+piramide_78 <- piramide_78 %>%   
+  select(1,2,4,5,7,8) %>% 
+  pivot_longer(cols = c(3,4),names_to = "sexo", values_to = "poblacion") %>% 
   mutate(sexo = ifelse(sexo == "varones", "V", "M"),
-         depto = fct_relevel(depto, c("Corpen Aike", "Deseado","Güer Aike","Lago Argentino", "Lago Buenos Aires", "Magallanes", "Río Chico")))
+         grupo_edad = case_when(
+           grupo_edad == "0-4" ~ "00-04",
+           grupo_edad == "5-9" ~ "05-09",
+           TRUE ~ grupo_edad)
+         )
 
-piramide_2022_prv$grupo_edad = ifelse(piramide_2022_prv$grupo_edad %in% "0-4", "00-04", piramide_2022_prv$grupo_edad)
-piramide_2022_prv$grupo_edad = ifelse(piramide_2022_prv$grupo_edad %in% "5-9", "05-09", piramide_2022_prv$grupo_edad)
+nombres_78 <- piramide_78 %>% 
+  select(depto,in1) %>% 
+  distinct()
 
-piramide_2022_prv %>%
-  mutate(poblacion = as.numeric(poblacion)) %>%  # Convertir a numérico
-  group_by(depto) %>%
-  mutate(porcentaje = as.numeric(poblacion / sum(poblacion) * 100)) %>%
-  ungroup() %>%
-  mutate(porcentaje = ifelse(sexo == "V", -porcentaje, porcentaje)) %>% 
-  mutate(sexo =  ifelse(sexo == "V", "varones", "mujeres")) %>% 
-  ggplot(aes(x = grupo_edad, y = porcentaje, fill = sexo)) +
-  geom_bar(stat = "identity") +
-  coord_flip() +  # Rotar la gráfica
-  facet_wrap(~depto) +  # Separar por año
-  scale_y_continuous(breaks = seq(-10, 10, by = 2), 
-                     labels = paste0(c(seq(-10, 0, by = 2)*-1, seq(2, 10, by = 2)), "%")) +
-  #scale_fill_manual(values = c("#0cce6b","#083d77")) + 
-  scale_fill_manual(values = c("#465775","#ef6f6c")) + 
-  labs(
-    y  = "porcentaje",
-    x  = "grupo de edad") +
-  theme_bw() +
-  theme(legend.position = "bottom",
-        legend.title = element_blank())
+crear_piramide <- function(codigo_in1, anio_censo) {
+  
+  depto_nombre <- nombres_78 %>% 
+    filter(in1 == codigo_in1) %>% 
+    pull(depto) %>% 
+    unique()
+  
+  piramide_78 %>%
+    filter(in1 == codigo_in1, censo == anio_censo) %>%
+    mutate(poblacion = as.numeric(poblacion)) %>%  
+    mutate(porcentaje = poblacion / sum(poblacion) * 100) %>%
+    ungroup() %>%
+    mutate(
+      porcentaje = ifelse(sexo == "V", -porcentaje, porcentaje),
+      sexo = ifelse(sexo == "V", "varones", "mujeres")
+    ) %>% 
+    ggplot(aes(x = grupo_edad, y = porcentaje, fill = sexo)) +
+    geom_bar(stat = "identity") +
+    coord_flip() +
+    scale_y_continuous(
+      limits = c(-8, 8),
+      breaks = seq(-10, 10, by = 2), 
+      labels = paste0(c(seq(-10, 0, by = 2) * -1, seq(2, 10, by = 2)), "%")
+    ) +
+    scale_fill_manual(values = c("#5e548e", "#ef6f6c")) + 
+    labs(
+      title = paste("Departamento", depto_nombre),
+      y = "porcentaje", 
+      x = "grupo de edad") +
+    theme_bw() +
+    theme(
+      legend.position = "bottom",
+      legend.title = element_blank(),
+      plot.margin = margin(8, 50, 8, 50)
+    )
+}
+
+p708007 <- crear_piramide(78007,2022)
+p708014 <- crear_piramide(78014,2022)
+p708021 <- crear_piramide(78021,2022)
+p708028 <- crear_piramide(78028,2022)
+p708035 <- crear_piramide(78035,2022)
+p708042 <- crear_piramide(78042,2022)
+p708049 <- crear_piramide(78049,2022)
 
 ```
 
+:::: {layout="[0.5, 0.5]"}
 
-4. Interprete los resultados obtenidos en los puntos 2 y 3.
+:::{#firstcol}
 
-5. Comente en un máximo de 400 palabras los procedimientos que siguió para
-obtener y procesar la información.
-
-(6). Si lo desea, puede complementar la interpretación anterior con la pirámide
-poblacional a nivel país. O trabajar con diferentes años censales.
-
-Censo 2001 vs 2022
 
 ```{r}
-piramide <- read.xlsx("data/deptos_con_codigo.xlsx", sheet = "censos")
-
-piramide$grupo_edad = ifelse(piramide$grupo_edad %in% "0-4", "00-04", piramide$grupo_edad)
-piramide$grupo_edad = ifelse(piramide$grupo_edad %in% "5-9", "05-09", piramide$grupo_edad)
-
-
-g_piramide <- piramide %>%
-  mutate(poblacion = as.numeric(poblacion)) %>%  # Convertir a numérico
-  group_by(censo) %>%
-  mutate(porcentaje = as.numeric(poblacion / sum(poblacion) * 100)) %>%
-  ungroup() %>%
-  mutate(porcentaje = ifelse(sexo == "V", -porcentaje, porcentaje)) %>% 
-  mutate(sexo =  ifelse(sexo == "V", "varones", "mujeres")) %>% 
-  ggplot(aes(x = grupo_edad, y = porcentaje, fill = sexo)) +
-  geom_bar(stat = "identity") +
-  coord_flip() +  # Rotar la gráfica
-  facet_wrap(~censo) +  # Separar por año
-  scale_y_continuous(breaks = seq(-10, 10, by = 2), 
-                     labels = paste0(c(seq(-10, 0, by = 2)*-1, seq(2, 10, by = 2)), "%")) +
-  #scale_fill_manual(values = c("#0cce6b","#083d77")) + 
-  scale_fill_manual(values = c("#465775","#ef6f6c")) + 
-  labs(
-    y  = "porcentaje",
-    x  = "grupo de edad") +
-  theme_bw() +
-  theme(legend.position = "bottom",
-        legend.title = element_blank())
-
-
-g_piramide
-
-#ggsave(filename = "graficos/piramide.png", plot =g_piramide, width = 20, height = 10, units = "cm")
+#| echo: false
+p708007
 ```
+
+
+```{r}
+#| echo: false
+p708014
+```
+
+
+
+```{r}
+#| echo: false
+p708042
+```
+
+:::
+
+:::{#secondcol}
+
+```{r}
+#| echo: false
+p708021
+```
+
+
+```{r}
+#| echo: false
+p708028
+```
+
+
+:::
+
+::::
+
+\pagebreak  
+
+:::: {layout="[0.5, 0.5]"}
+
+:::{#firstcol}
+
+
+```{r}
+#| echo: false
+p708035
+```
+
+
+
+:::
+
+:::{#secondcol}
+
+
+```{r}
+#| echo: false
+p708049 
+
+```
+
+
+
+:::
+
+::::
+
+_Fuente: elaboración propia con base en datos del INDEC. Censo Nacional de Población, Hogares y Vivienda 2022, procesado con Redatam 7._
+
+
+
+
+### 4.  Interprete los resultados obtenidos en los puntos 2 y 3.
+
+> Para el censo de 2022, la población de la provincia de Santa Cruz es de 337.226 habitantes, siendo una de las provincias con menor densidad poblacional, con 1,4 habitantes por km². La pirámide poblacional de la provincia muestra una base estrecha en el grupo quinquenal de 0-4 años, lo que sugiere una reducción en la tasa de natalidad. Sin embargo, se observa un aumento en los grupos de edad de 5 a 19 años, seguido de una nueva disminución en el grupo de 20 a 24 años, edad clave en la actividad económica. A pesar de ello, los grupos posteriores (de 25 a 44 años) indican una población predominante en edad productiva. La cúspide muestra un ligero ensanchamiento, lo que refleja una esperanza de vida en aumento y un leve proceso de envejecimiento poblacional.
+
+> En general, la distribución entre varones y mujeres es equilibrada en la mayoría de los grupos etarios, aunque en edades avanzadas se nota una mayor proporción de mujeres, lo que es común debido a una mayor esperanza de vida.
+
+> En los departamentos de la provincia, el fenómeno de base estrecha y la contracción en el grupo etario de 20-24 años se intensifica o se extiende a otros grupos a medida que varían las regiones. En Corpen Aike, Lago Buenos Aires y Magallanes, la pirámide presenta una base angosta, con una contracción más marcada en el grupo de 15 a 24 años. Sin embargo, la distribución de los demás grupos etarios se mantiene constante y en línea con el total provincial.
+
+> En Deseado, la estructura poblacional sigue un patrón similar al de la provincia en su conjunto. En cambio, Güer Aike muestra la mayor reducción en la base de la pirámide en comparación con el resto de los departamentos, lo que refleja una menor natalidad en los últimos años.
+
+> Por otro lado, en los departamentos de Lago Argentino y Río Chico, las pirámides poblacionales presentan mayores fluctuaciones en los grupos quinquenales de mayor actividad productiva, mientras que las edades asociadas al retiro del mercado laboral se mantienen relativamente constantes.
+
+ 
+
+### 5.  Comente en un máximo de 400 palabras los procedimientos que siguió para obtener y procesar la información.
+
+Una vez descargadas las tablas de datos de la provincia de Santa Cruz y sus departamentos sobre la estructura de población para los censos de 2001 y 2022 desde REDATAM, se procedió a crear una base estructurada que permitiera transformar y calcular los datos de la población en valores porcentuales del total. Este porcentaje se calcula como el cociente entre la población de un sexo y grupo de edad determinados y la población total, multiplicado por cien. Luego, se utilizan estos datos para la graficación en el lenguaje de programación R, que permite representar mediante un gráfico de barras la distribución de la población de un lugar, mostrando cómo se distribuyen los individuos en diferentes grupos quinquenales de edad y sexo.
+
+\pagebreak 
+
+### 6. Si lo desea, puede complementar la interpretación anterior con la pirámide poblacional a nivel país. O trabajar con diferentes años censales.
+
+
+#### Comparativo total del país y provincia de Santa Cruz censo 2001 y 2022
+
+Gráfico 3. Estructura de la población por sexo y grupos quinquenales de edad. Total del país y Provincia de Santa Cruz. Año 2022
+
+```{r grafico 3}
+#| include: false
+generar_grafico <- function(censo_año) {
+  # Cargar los datos
+  piramide <- read.xlsx("data/deptos_con_codigo.xlsx", sheet = "censos")
+  
+  # Modificar grupo de edad
+  piramide$grupo_edad <- ifelse(piramide$grupo_edad %in% "0-4", "00-04", piramide$grupo_edad)
+  piramide$grupo_edad <- ifelse(piramide$grupo_edad %in% "5-9", "05-09", piramide$grupo_edad)
+  
+  # Filtrar por censo
+  piramide <- piramide %>%
+    filter(censo == censo_año) %>%
+    cbind(depto = "Total del país")
+  
+  piramide_78 <- read.xlsx("data/deptos_con_codigo.xlsx", sheet = "78")
+  
+  piramide_78 <- piramide_78 %>%   
+    select(1, 2, 4, 5, 7, 8) %>%
+    pivot_longer(cols = c(3, 4), names_to = "sexo", values_to = "poblacion") %>%
+    mutate(sexo = ifelse(sexo == "varones", "V", "M"),
+           grupo_edad = case_when(
+             grupo_edad == "0-4" ~ "00-04",
+             grupo_edad == "5-9" ~ "05-09",
+             TRUE ~ grupo_edad
+           ))
+
+  # Filtrar por censo y depto
+  piramide_78 <- piramide_78 %>%
+    select(-in1) %>%
+    filter(depto == "Santa Cruz", censo == censo_año)
+  
+  # Unir los datasets
+  pais_78 <- rbind(piramide, piramide_78) %>% 
+    mutate(depto = fct_relevel(depto, c("Total del país", "Santa Cruz")))
+  
+  # Crear el gráfico
+  pais_78 %>%
+    mutate(poblacion = as.numeric(poblacion)) %>%  # Convertir a numérico
+    group_by(censo, depto) %>%
+    mutate(porcentaje = as.numeric(poblacion / sum(poblacion) * 100)) %>%
+    ungroup() %>%
+    mutate(porcentaje = ifelse(sexo == "V", -porcentaje, porcentaje)) %>%
+    mutate(sexo =  ifelse(sexo == "V", "varones", "mujeres")) %>%
+    ggplot(aes(x = grupo_edad, y = porcentaje, fill = sexo)) +
+    geom_bar(stat = "identity") +
+    coord_flip() +  # Rotar la gráfica
+    facet_wrap(~depto) +  # Separar por depto
+    scale_y_continuous(
+      limits = c(-8, 8),
+      breaks = seq(-10, 10, by = 2), 
+      labels = paste0(c(seq(-10, 0, by = 2) * -1, seq(2, 10, by = 2)), "%")
+    ) +
+    scale_fill_manual(values = c("#0cce6b", "#083d77")) + 
+    scale_alpha_manual(values = c(0.5, 1)) +
+    labs(
+      y  = "porcentaje",
+      x  = "grupo de edad"
+    ) +
+    theme_bw() +
+    theme(legend.position = "bottom",
+          legend.title = element_blank())
+}
+
+```
+
+
+
+```{r }
+#| echo: false
+generar_grafico(2022)
+
+```
+
+
+_Fuente: elaboración propia con base en datos del INDEC. Censo Nacional de Población, Hogares y Vivienda 2022, procesado con Redatam 7._
+
+> Para el censo de 2022, la pirámide poblacional del país es de tipo estacionaria, ya que presenta una base moderada. Los grupos de edad intermedios son amplios y mantienen un tamaño relativamente constante, lo que sugiere un equilibrio entre nacimientos y mortalidad, con niveles bajos en ambos indicadores.
+
+> Ambas pirámides tienen una estructura similar, con una base más estrecha en los grupos de edad más jóvenes y un ensanchamiento en los grupos adultos. Sin embargo, la pirámide de Santa Cruz muestra una base aún más reducida en comparación con la del total del país, lo que sugiere una menor natalidad o una mayor migración de población joven.
+
+> En ambos casos, el porcentaje de población mayor (65+ años) sigue siendo bajo, aunque presenta un leve ensanchamiento, reflejando un aumento en la esperanza de vida y un proceso gradual de envejecimiento poblacional.
+
+Gráfico 4. Estructura de la población por sexo y grupos quinquenales de edad. Total del país y Provincia de Santa Cruz. Año 2001
+
+```{r grafico 4, fig.height=5, fig.width=10}
+#| echo: false
+generar_grafico(2001)
+```
+
+_Fuente: elaboración propia con base en datos del INDEC. Censo Nacional de Población, Hogares y Vivienda 2001, procesado con Redatam 7._
+
+> Para el censo de 2001, la pirámide poblacional del total del país presentaba una estructura expansiva moderada, con una base relativamente ancha y una reducción progresiva en los grupos de edad superiores, lo que sugiere que la natalidad seguía siendo significativa. En comparación con el censo de 2022, la provincia de Santa Cruz muestra un estrechamiento de su base y alteraciones en grupos etarios clave, reflejando cambios en los patrones de natalidad y migración.
+
+
+\pagebreak 
+
+#### Comparativo departamental 2001 y 2022 
+
+En este apartado observamos en detalle la transformación demográfica de cada uno de los departamentos de la provinia de Santa Cruz entre los censos de 2001 y 2022
+
+```{r fig.height=5, fig.width=10}
+#| include: false
+
+ piramide_78 <- read.xlsx("data/deptos_con_codigo.xlsx", sheet = "78")
+  
+ piramide_78 <- piramide_78 %>%   
+    select(1, 2, 4, 5, 7, 8) %>%
+    pivot_longer(cols = c(3, 4), names_to = "sexo", values_to = "poblacion") %>%
+    mutate(sexo = ifelse(sexo == "varones", "V", "M"),
+           grupo_edad = case_when(
+             grupo_edad == "0-4" ~ "00-04",
+             grupo_edad == "5-9" ~ "05-09",
+             TRUE ~ grupo_edad
+           ))
+
+dep_censal <- function(valor_in1) {
+  piramide_78 %>%
+    filter(in1 == valor_in1) %>%
+    group_by(censo, depto) %>% 
+    mutate(poblacion = as.numeric(poblacion)) %>%  
+    mutate(porcentaje = poblacion / sum(poblacion) * 100) %>%
+    ungroup() %>%
+    mutate(
+      porcentaje = ifelse(sexo == "V", -porcentaje, porcentaje),
+      sexo = ifelse(sexo == "V", "varones", "mujeres")
+    ) %>% 
+    ggplot(aes(x = grupo_edad, y = porcentaje, fill = sexo)) +
+    geom_bar(stat = "identity") +
+    coord_flip() +
+    facet_wrap(~censo) +  # Separar por censo
+    scale_y_continuous(
+      limits = c(-8, 8),
+      breaks = seq(-10, 10, by = 2), 
+      labels = paste0(c(seq(-10, 0, by = 2) * -1, seq(2, 10, by = 2)), "%")
+    ) +
+    scale_fill_manual(values = c("#5e548e", "#ef6f6c")) + 
+    labs(
+      y = "porcentaje", 
+      x = "grupo de edad"
+    ) +
+    theme_bw() +
+    theme(
+      legend.position = "bottom",
+      legend.title = element_blank(),
+      plot.margin = margin(8, 50, 8, 50)
+    )
+}
+```
+
+
+Gráfico 5 . Estructura de la población por sexo y grupos quinquenales de edad. Departamento Corpen Aike. Provincia de Santa Cruz. Años 2001 y 2022 
+
+```{r grafico 5, fig.height=5, fig.width=10}
+#| echo: false
+dep_censal(78007)
+```
+
+_Fuente: elaboración propia con base en datos del INDEC. Censo Nacional de Población, Hogares y Viviendas 2001 y 2022, procesado con Redatam 7._
+
+
+> Para este departamento, en 2001, la pirámide presenta una forma predominantemente triangular, aunque con algunas irregularidades, lo que indica una población con una base relativamente ancha y sugiere una tasa de natalidad más alta en comparación con los grupos de edad más avanzada. En cambio, para 2022, la pirámide muestra una tendencia hacia una forma más rectangular o de 'campana', lo que refleja una disminución en la natalidad y un aumento en la proporción de personas en grupos de edad intermedios y avanzados.
+
+\pagebreak 
+
+Gráfico 6. Estructura de la población por sexo y grupos quinquenales de edad. Departamento Deseado. Provincia de Santa Cruz. Años 2001 y 2022 
+
+```{r grafico 6, fig.height=5, fig.width=10}
+#| echo: false
+dep_censal(78014)
+```
+_Fuente: elaboración propia con base en datos del INDEC. Censo Nacional de Población, Hogares y Viviendas 2001 y 2022, procesado con Redatam 7._
+
+
+> La pirámide de 2001 presenta una forma más cercana a la triangular, mientras que la de 2022 adopta una forma similar a una campana, e incluso comienza a mostrar características de urna. Se observa una tendencia al envejecimiento de la población en Deseado, reflejada en la disminución de la base de la pirámide (menos jóvenes) y el aumento en la cima (más adultos mayores). Este patrón también se repite en otros departamentos.
+
+	
+\pagebreak 
+
+Gráfico 7. Estructura de la población por sexo y grupos quinquenales de edad. Departamento  Güer Aike. Provincia de Santa Cruz. Años 2001 y 2022
+
+```{r grafico 7, fig.height=5, fig.width=10}
+#| echo: false
+dep_censal(78021)
+```
+
+
+_Fuente: elaboración propia con base en datos del INDEC. Censo Nacional de Población, Hogares y Viviendas 2001 y 2022, procesado con Redatam 7._
+
+> Se observa una disminución en el porcentaje de población en los grupos de edad más jóvenes (0-14 años) entre 2001 y 2022, lo que refleja una reducción en la tasa de natalidad del departamento. En 2022, la pirámide poblacional muestra una tendencia hacia una forma más rectangular o de 'campana', lo que indica un aumento en la proporción de personas en grupos de edad intermedios y avanzados.
+
+
+\pagebreak 
+
+
+Gráfico 8. Estructura de la población por sexo y grupos quinquenales de edad. Departamento Lago Argentino. Provincia de Santa Cruz. Años 2001 y 2022
+
+```{r grafico 8, fig.height=5, fig.width=10}
+#| echo: false
+dep_censal(78028)
+```
+
+_Fuente: elaboración propia con base en datos del INDEC. Censo Nacional de Población, Hogares y Viviendas 2001 y 2022, procesado con Redatam 7._
+
+
+> Se observa una disminución en el porcentaje de población en los grupos de edad más jóvenes entre 2001 y 2022. En 2001, la pirámide poblacional tiene una forma más triangular, lo que refleja una población con una base más ancha y una cima más estrecha, lo que sugiere tasas de natalidad relativamente altas y una esperanza de vida más baja. En contraste, en 2022, la pirámide adopta una forma más cercana a la de una 'campana' e incluso comienza a mostrar características de 'urna'. Esto indica una disminución en la natalidad y un aumento en la proporción de personas en grupos de edad más avanzada, lo que señala un envejecimiento progresivo de la población.
+
+
+\pagebreak 
+
+
+Gráfico 9. Estructura de la población por sexo y grupos quinquenales de edad. Departamento Lago Buenos Aires. Provincia de Santa Cruz. Años 2001 y 2022
+
+
+```{r grafico 9, fig.height=5, fig.width=10}
+#| echo: false
+dep_censal(78035)
+```
+
+
+_Fuente: elaboración propia con base en datos del INDEC. Censo Nacional de Población, Hogares y Viviendas 2001 y 2022, procesado con Redatam 7._
+
+
+
+> En 2022, el departamento de Lago Buenos Aires muestra un estrechamiento en la base de la población de 0 a 14 años, en comparación con 2001, cuando se observaba una presencia más constante en estos grupos. El fenómeno provincial de concentración en el grupo de 20 a 24 años se mantiene, mientras que los demás grupos etarios se mantienen estables entre ambos periodos.
+
+\pagebreak 
+
+Gráfico 10. Estructura de la población por sexo y grupos quinquenales de edad. Departamento Magallanes. Provincia de Santa Cruz. Años 2001 y 2022
+
+```{r grafico 10, fig.height=5, fig.width=10}
+#| echo: false
+dep_censal(78042)
+```
+
+_Fuente: elaboración propia con base en datos del INDEC. Censo Nacional de Población, Hogares y Viviendas 2001 y 2022, procesado con Redatam 7._
+
+
+> En 2022, la estructura poblacional del departamento de Magallanes muestra un ensanchamiento en la franja media, lo que indica una mayor concentración de adultos jóvenes, mientras que la base de la pirámide, correspondiente al grupo de 0 a 4 años, sigue siendo más estrecha.
+
+\pagebreak 
+
+Gráfico 11. Estructura de la población por sexo y grupos quinquenales de edad. Departamento Río Chico. Provincia de Santa Cruz. Años 2001 y 2022
+
+
+```{r grafico 11, fig.height=5, fig.width=10}
+#| echo: false
+dep_censal(78049)
+```
+
+
+_Fuente: elaboración propia con base en datos del INDEC. Censo Nacional de Población, Hogares y Viviendas 2001 y 2022, procesado con Redatam 7._
+
+> El departamento de Río Chico es el menos poblado de la provincia. Su envejecimiento poblacional se mantiene constante y, para 2022, refleja las mismas alteraciones demográficas observadas en el total de la provincia.
+
+> En síntesis, la provincia de Santa Cruz y sus departamentos muestran signos de menor natalidad, migración de jóvenes hacia otras zonas, y un proceso de envejecimiento paulatino. Es importante considerar las particularidades de cada departamento, como la actividad económica, la migración y otros factores que pueden influir en la estructura demográfica.
